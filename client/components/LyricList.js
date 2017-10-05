@@ -6,14 +6,20 @@ import LikeLyricQuery from '../queries/likeLyric';
 class LyricList extends Component {
     componentDidMount() {
     }
-    onLike(id) {
-      console.log(id);
+    onLike({id, likes}) {
       this.props.mutate({
         variables: {
           id
+        },
+        optimisticResponse: {
+          __typename: 'Mutation',
+          likeLyric: {
+            id,
+            __typename: 'LyricType',
+            likes: likes + 1
+          }
         }
       }).then((data) => {
-        console.log(data);
       })
     }
     renderLyrics() {
@@ -21,7 +27,10 @@ class LyricList extends Component {
         return (
           <li key={lyric.id} className="collection-item">
             {lyric.content}
-            <i className="material-icons right" onClick={() => this.onLike(lyric.id)}>thumb_up</i>
+            <span className="right">
+              {lyric.likes}
+              <i className="material-icons" onClick={() => this.onLike(lyric)}>thumb_up</i>
+            </span>
           </li>
         )
       })
